@@ -15,15 +15,23 @@ public class SyntaxChecker {
    * LISP file passed as a command line argument.
    */
     public static void main(String[] args) throws IOException {
-      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+      if(args.length == 1) {
+        System.out.println("Please wait while LISP parentheses syntax is checked.");
+        boolean isValid = cliParenthesesMatcher(args[0]);
+        System.out.println("Parenetheses are properly closed and nested : " + isValid);
+      }
 
-      System.out.println("Please enter a single line of LISP code to have validated.");
-      String input = br.readLine();
-      System.out.println("Please wait while LISP parentheses syntax is checked.");
+      else {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-      boolean isValid = cliParenthesesMatcher(input);
-      System.out.println("Parenetheses are properly closed and nested : " + isValid);
-      br.close();
+        System.out.println("Please enter a single line of LISP code to have validated.");
+        String input = br.readLine();
+        System.out.println("Please wait while LISP parentheses syntax is checked.");
+
+        boolean isValid = cliParenthesesMatcher(input);
+        System.out.println("Parenetheses are properly closed and nested : " + isValid);
+        br.close();
+      }
     }
 
     private static boolean cliParenthesesMatcher(String input) {
@@ -33,25 +41,24 @@ public class SyntaxChecker {
        * as a char array.
        */
       Stack<String> stack = new Stack<String>();
-
       boolean atLeastOneElementAdded = false;
 
-      for(int i = 0; i < input.length(); i++){
+      for(int i = 0; i < input.length(); i++) {
         if(input.charAt(i) == '('){
           stack.push(input.substring(i, i));
           if(!atLeastOneElementAdded) {
             atLeastOneElementAdded = true;
           }
         }
-        else if(input.charAt(i) == ')'){
-          try{
+        else if(input.charAt(i) == ')') {
+          try {
             stack.pop();
-          }catch(EmptyStackException e){
+          }catch(EmptyStackException e) {
             // If stack is empty, we can't match this closing parenthesis.
             return false;
           }
         }
-        else if(input.charAt(i) == ';'){
+        else if(input.charAt(i) == ';') {
           // Everything that follows is part of a LISP comment, and for a single line string we ignore the rest.
           break;
         }
