@@ -1,0 +1,6 @@
+ (defmethod rewind-state ((rewindable rewindable))
+   (invariant (not (zerop (rewind-count rewindable))))
+   (setf (rewind-index rewindable) 
+         (mod (1+ (rewind-index rewindable)) (rewind-count rewindable)))
+   (aref (rewind-store rewindable) 
+         (- (rewind-count rewindable) (rewind-index rewindable) 1))
