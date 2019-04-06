@@ -21,20 +21,27 @@ public class SyntaxChecker {
       String input = br.readLine();
       System.out.println("Please wait while LISP parentheses syntax is checked.");
 
-      boolean isValid = parenthesesMatcher(input);
+      boolean isValid = cliParenthesesMatcher(input);
       System.out.println("Parenetheses are properly closed and nested : " + isValid);
       br.close();
     }
 
-    private static boolean parenthesesMatcher(String input) {
-      /**
+    private static boolean cliParenthesesMatcher(String input) {
+      /*
        * Takes an input string of LISP syntax and returns true or false based on whether or not
-       * all parentheses are properly closed and nested. For small strings we iterate over it as a char array.
+       * all parentheses are properly closed and nested. For small strings we iterate over it
+       * as a char array.
        */
       Stack<String> stack = new Stack<String>();
+
+      boolean atLeastOneElementAdded = false;
+
       for(int i = 0; i < input.length(); i++){
         if(input.charAt(i) == '('){
           stack.push(input.substring(i, i));
+          if(!atLeastOneElementAdded) {
+            atLeastOneElementAdded = true;
+          }
         }
         else if(input.charAt(i) == ')'){
           try{
@@ -44,14 +51,13 @@ public class SyntaxChecker {
             return false;
           }
         }
+        else if(input.charAt(i) == ';'){
+          // Everything that follows is part of a LISP comment, and for a single line string we ignore the rest.
+          break;
+        }
       }
-      
-      try{
-        stack.peek();
-      }catch(EmptyStackException e){
-        // If stack is empty, then all parentheses have been matched.
-        return true;
-      }
-      return false;
+
+      // If stack is empty now, then all parentheses have been matched.
+      return atLeastOneElementAdded && stack.empty();
     }
 }
