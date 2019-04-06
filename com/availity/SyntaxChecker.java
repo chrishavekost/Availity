@@ -15,9 +15,10 @@ public class SyntaxChecker {
    * LISP file passed as a command line argument.
    */
     public static void main(String[] args) throws IOException {
+      boolean isValid = false;
       if(args.length == 1) {
         System.out.println("Please wait while LISP parentheses syntax is checked.");
-        boolean isValid = cliParenthesesMatcher(args[0]);
+        isValid = cliParenthesesMatcher(args[0]);
         System.out.println("Parenetheses are properly closed and nested : " + isValid);
       }
 
@@ -28,7 +29,7 @@ public class SyntaxChecker {
         String input = br.readLine();
         System.out.println("Please wait while LISP parentheses syntax is checked.");
 
-        boolean isValid = cliParenthesesMatcher(input);
+        isValid = cliParenthesesMatcher(input);
         System.out.println("Parenetheses are properly closed and nested : " + isValid);
         br.close();
       }
