@@ -1,7 +1,6 @@
 package com.availity;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class FileLoader {
     /**
@@ -9,7 +8,8 @@ public class FileLoader {
      * The parameter passed indicates whether we should load LISP or CSV test files.
      */
     public File[] getFiles(String fileType) {
-        StringBuilder path = new StringBuilder("../../TestFiles");
+        // TODO: implement properties files instead of using absolute paths.
+        StringBuilder path = new StringBuilder("TestFiles");
 
         if(fileType.equalsIgnoreCase("LISP")) {
             return getLISPFiles(path);
@@ -21,12 +21,12 @@ public class FileLoader {
     }
 
     private File[] getLISPFiles(StringBuilder path) {
-        path.append("LISP");
+        path.append("\\LISP");
         return new File(path.toString()).listFiles();
     }
 
     private File[] getCSVFiles(StringBuilder path) {
-        path.append("CSV");
+        path.append("\\CSV");
         return new File(path.toString()).listFiles();
     }
 }
