@@ -27,6 +27,8 @@ public class FileLoader {
 
     private File[] getCSVFiles(StringBuilder path) {
         path.append("\\CSV");
-        return new File(path.toString()).listFiles();
+        return new File(path.toString()).listFiles((d,s) -> {
+            return s.contains(".csv");
+        });
     }
 }
