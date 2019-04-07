@@ -26,14 +26,15 @@ public class SyntaxChecker {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         System.out.println("Enter 1 to check test files, enter anything else to enter your own string.");
-        String input = br.readLine();
-        switch(input){
+        String testType = br.readLine();
+        switch(testType){
           case "1":
             br.close();
             sc.checkTestCases();
             break;
           default:
             System.out.println("Please enter a string of LISP code to have validated.");
+            String input = br.readLine();
             System.out.println("Please wait while LISP parentheses syntax is checked.");
 
             isValid = sc.parenthesesMatcher(input);
