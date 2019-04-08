@@ -9,6 +9,7 @@ public class FileLoader {
      */
     public File[] getFiles(String fileType) {
         // TODO: implement properties files instead of using absolute paths.
+        // TODO: Exception handling template
         StringBuilder path = new StringBuilder("TestFiles");
 
         if(fileType.equalsIgnoreCase("LISP")) {
