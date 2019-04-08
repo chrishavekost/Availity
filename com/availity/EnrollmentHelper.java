@@ -28,7 +28,7 @@ public class EnrollmentHelper {
                 InputStream input = new FileInputStream(f);
                 BufferedReader br = new BufferedReader(new InputStreamReader(input));
                 Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(br);
-                HashMap<String, HashSet<Enrollee>> enrolleeToCompanyMap = new HashMap<String, HashSet<Enrollee>>();
+                HashMap<String, SortedSet<Enrollee>> enrolleeToCompanyMap = new HashMap<String, SortedSet<Enrollee>>();
 
                 for(CSVRecord r : records) {
                     // Create new Enrollee, capture fields
@@ -42,14 +42,14 @@ public class EnrollmentHelper {
                     /* If key doesn't already have a value, compute function will run and add a new Enrollee
                      *  HashSet for that insurance company. Then we add the current enrollee to that set.
                      */
-                    enrolleeToCompanyMap.computeIfAbsent(e.getInsuranceCompany(), k -> new HashSet<Enrollee>());
+                    enrolleeToCompanyMap.computeIfAbsent(e.getInsuranceCompany(), k -> new TreeSet<Enrollee>());
                     addEnrolleeToCompanyMap(enrolleeToCompanyMap.get(e.getInsuranceCompany()), e);
                 }
 
 
                 /*
                  * TODO:
-                 *  Order Enrollees by name
+                 *  Order Enrollees by name. Using TreeSet will take care of this since Enrollee will override compareTo.
                  *  CSVPrinter into new File for each insurance company
                  *  For each key in key set, create new file "key.csv"
                  * Into each file, print headers and then iterate over set of enrolles
@@ -57,7 +57,7 @@ public class EnrollmentHelper {
 
                 for(String company : enrolleeToCompanyMap.keySet()) {
                     System.out.println(company);
-                    HashSet<Enrollee> set = enrolleeToCompanyMap.get(company);
+                    SortedSet<Enrollee> set = enrolleeToCompanyMap.get(company);
                     set.forEach(enrollee ->System.out.println(enrollee.getUserId() + ", version: " + enrollee.getVersion()));
                 }
 
@@ -67,7 +67,7 @@ public class EnrollmentHelper {
         }
     }
 
-    private static void addEnrolleeToCompanyMap(HashSet<Enrollee> currentEnrolleeSet, Enrollee e) {
+    private static void addEnrolleeToCompanyMap(SortedSet<Enrollee> currentEnrolleeSet, Enrollee e) {
         /*
          * Before adding the enrollee to the company map, this function will check to see if that company's Set of
          * employees already contains this enrollee's User Id.

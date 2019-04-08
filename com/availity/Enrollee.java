@@ -2,7 +2,7 @@ package com.availity;
 
 import java.util.Collection;
 
-public class Enrollee {
+public class Enrollee implements Comparable<Enrollee> {
     /*
      * Object to hold Enrollee fields from CSV files.
      * Name field included for changes going forward, but assignment makes it seem like first
@@ -25,11 +25,7 @@ public class Enrollee {
     }
 
     public String getName() {
-        return _name;
-    }
-
-    public void setName(String name) {
-        this._name = name;
+        return this.getLastName() + this.getFirstName();
     }
 
     public String getFirstName() {
@@ -64,4 +60,8 @@ public class Enrollee {
        this._version =  Integer.parseInt(version);
     }
 
+    @Override
+    public int compareTo(Enrollee otherEnrollee) {
+        return (this.getName().compareTo(otherEnrollee.getName()));
+    }
 }
