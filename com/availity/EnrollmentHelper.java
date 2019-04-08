@@ -58,7 +58,8 @@ public class EnrollmentHelper {
                 for(String company : enrolleeToCompanyMap.keySet()) {
                     System.out.println(company);
                     SortedSet<Enrollee> set = enrolleeToCompanyMap.get(company);
-                    set.forEach(enrollee ->System.out.println(enrollee.getUserId() + ", version: " + enrollee.getVersion()));
+                    set.forEach(enrollee ->System.out.println(enrollee.getUserId() + ", version: " + enrollee.getVersion() +
+                            " name: " + enrollee.getName()));
                 }
 
             } catch(Exception e) {
