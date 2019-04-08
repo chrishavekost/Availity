@@ -1,7 +1,5 @@
 package com.availity;
 
-import java.util.Collection;
-
 public class Enrollee implements Comparable<Enrollee> {
     /*
      * Object to hold Enrollee fields from CSV files.

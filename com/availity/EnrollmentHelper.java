@@ -1,15 +1,9 @@
 package com.availity;
 
-import jdk.internal.util.xml.impl.Input;
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
-
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 public class EnrollmentHelper {
@@ -97,12 +91,8 @@ public class EnrollmentHelper {
 
     private static void createCompanyFile(String company, SortedSet<Enrollee> set) throws IOException {
         try {
-            //Writer output = new BufferedWriter(new FileWriter("TestFiles\\out\\CSV"));
             String path = "TestFiles\\out\\CSV\\" + company + ".csv"; // TODO: Use relative path instead of hard coded.
             BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(path));
-
-            /*CSVPrinter printer = CSVFormat.EXCEL
-                    .withHeader("User Id", "First Name", "Last Name", "Version", "Insurance Company").;*/
             StringBuilder csvOut = new StringBuilder("User Id,First Name,Last Name,Version,Insurance Company");
 
             for(Enrollee en : set) {
