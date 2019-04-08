@@ -6,6 +6,7 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,10 +28,7 @@ public class EnrollmentHelper {
                 InputStream input = new FileInputStream(f);
                 BufferedReader br = new BufferedReader(new InputStreamReader(input));
                 Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(br);
-                List<Enrollee> eList = new ArrayList<Enrollee>();
-                Set<String> insuranceCompanies = new HashSet<String>();
-
-                HashMap<String, HashSet<Enrollee>> map = new HashMap<String, HashSet<Enrollee>>();
+                HashMap<String, HashSet<Enrollee>> enrolleeToCompanyMap = new HashMap<String, HashSet<Enrollee>>();
 
                 for(CSVRecord r : records) {
                     // Create new Enrollee, capture fields
@@ -41,24 +39,26 @@ public class EnrollmentHelper {
                     e.setVersion(r.get("Version"));
                     e.setInsuranceCompany(r.get("Insurance Company"));
 
-                    
-
-                    /*insuranceCompanies.add(e.getInsuranceCompany());
-                    eList.add(e);*/
+                    /* If key doesn't already have a value, compute function will run and add a new Enrollee
+                     *  HashSet for that insurance company. Then we add the current enrollee to that set.
+                     */
+                    enrolleeToCompanyMap.computeIfAbsent(e.getInsuranceCompany(), k -> new HashSet<Enrollee>());
+                    addEnrolleeToCompanyMap(enrolleeToCompanyMap.get(e.getInsuranceCompany()), e);
                 }
-                /* TODO: manipulate eList. Only want to write to a file once, so separate into Insurance company
-                 * TODO: Function to map enrollee to company. Use Company HashMap<UserId, List<Enrollees>>
-                 * TODO: Function to iterate over each HashMap. If List size greater than one, compare each enrollee
-                 *  version number, keep top number enrollee
-                 * TODO: Create another new data container or manipulate existing HashMap. Each List of enrollees should
-                 *  now be of size 1, so if we can flatten to <Id, Enrollee
-                 * All different enrollee objects can be added to the same set. Then in the Set we can sort by Name.
-                 * Then we can remove duplicate Ids keeping highest version number
-                 * TODO: CSVPrinter into new File for each insurance company
+
+
+                /*
+                 * TODO:
+                 *  Order Enrollees by name
+                 *  CSVPrinter into new File for each insurance company
+                 *  For each key in key set, create new file "key.csv"
+                 * Into each file, print headers and then iterate over set of enrolles
                  */
-                System.out.println(insuranceCompanies.size());
-                for(Enrollee e : eList) {
-                    System.out.println(e.getInsuranceCompany());
+
+                for(String company : enrolleeToCompanyMap.keySet()) {
+                    System.out.println(company);
+                    HashSet<Enrollee> set = enrolleeToCompanyMap.get(company);
+                    set.forEach(enrollee ->System.out.println(enrollee.getUserId() + ", version: " + enrollee.getVersion()));
                 }
 
             } catch(Exception e) {
@@ -67,6 +67,35 @@ public class EnrollmentHelper {
         }
     }
 
-    private static void mapList() {
+    private static void addEnrolleeToCompanyMap(HashSet<Enrollee> currentEnrolleeSet, Enrollee e) {
+        /*
+         * Before adding the enrollee to the company map, this function will check to see if that company's Set of
+         * employees already contains this enrollee's User Id.
+         * If it does, it compares versions and keeps the object with the higher version, removing the other.
+         * If it does not, it adds the current enrollee object.
+         * We shouldn't have to worry about a case where there are already multiple identical User Ids in the set
+         * because we are calling this method every time.
+         */
+        List<Enrollee> toRemove = new ArrayList<>();
+        List<Enrollee> toAdd = new ArrayList<>();
+
+        if(!currentEnrolleeSet.isEmpty()) {
+            currentEnrolleeSet.forEach(currentEnrollee -> {
+                if (currentEnrollee.getUserId().hashCode() == e.getUserId().hashCode()) {
+                    if (e.getVersion() > currentEnrollee.getVersion()) {
+                        toAdd.add(e);
+                        toRemove.add(currentEnrollee);
+                    }
+                }
+                else {
+                    toAdd.add(e);
+                }
+            });
+            currentEnrolleeSet.removeAll(toRemove);
+            currentEnrolleeSet.addAll(toAdd);
+        }
+        else {
+            currentEnrolleeSet.add(e); // Set was empty, clear to add enrollee.
+        }
     }
 }
