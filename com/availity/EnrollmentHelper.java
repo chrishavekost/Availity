@@ -2,6 +2,7 @@ package com.availity;
 
 import jdk.internal.util.xml.impl.Input;
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.*;
@@ -46,20 +47,14 @@ public class EnrollmentHelper {
                     addEnrolleeToCompanyMap(enrolleeToCompanyMap.get(e.getInsuranceCompany()), e);
                 }
 
-
-                /*
-                 * TODO:
-                 *  Order Enrollees by name. Using TreeSet will take care of this since Enrollee will override compareTo.
-                 *  CSVPrinter into new File for each insurance company
-                 *  For each key in key set, create new file "key.csv"
-                 * Into each file, print headers and then iterate over set of enrolles
-                 */
-
+                // Create the separate output files.
                 for(String company : enrolleeToCompanyMap.keySet()) {
-                    System.out.println(company);
-                    SortedSet<Enrollee> set = enrolleeToCompanyMap.get(company);
-                    set.forEach(enrollee ->System.out.println(enrollee.getUserId() + ", version: " + enrollee.getVersion() +
-                            " name: " + enrollee.getName()));
+                    try {
+                        createCompanyFile(company, enrolleeToCompanyMap.get(company));
+                    }
+                    catch(IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             } catch(Exception e) {
@@ -97,6 +92,34 @@ public class EnrollmentHelper {
         }
         else {
             currentEnrolleeSet.add(e); // Set was empty, clear to add enrollee.
+        }
+    }
+
+    private static void createCompanyFile(String company, SortedSet<Enrollee> set) throws IOException {
+        try {
+            //Writer output = new BufferedWriter(new FileWriter("TestFiles\\out\\CSV"));
+            String path = "TestFiles\\out\\CSV\\" + company + ".csv"; // TODO: Use relative path instead of hard coded.
+            BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(path));
+
+            /*CSVPrinter printer = CSVFormat.EXCEL
+                    .withHeader("User Id", "First Name", "Last Name", "Version", "Insurance Company").;*/
+            StringBuilder csvOut = new StringBuilder("User Id,First Name,Last Name,Version,Insurance Company");
+
+            for(Enrollee en : set) {
+                csvOut.append("\n")
+                        .append(en.getUserId()).append(',')
+                        .append(en.getFirstName()).append(',')
+                        .append(en.getLastName()).append(',')
+                        .append(en.getVersion()).append(',')
+                        .append(en.getInsuranceCompany()
+                );
+            }
+            output.write(csvOut.toString().getBytes());
+            output.flush();
+            output.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
